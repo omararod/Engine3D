@@ -4,15 +4,7 @@ int main()
 {
 	Engine3D engine;
 	engine.IntializeFull();
-	/*Engine3D::Vertex *vertices = new Engine3D::Vertex[3];
-	vertices[0] = { 0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f };
-	vertices[1] = { 0.45f, -0.5f,0.0f,0.0f,1.0f,0.0f,1.0f };
-	vertices[2] = { -0.45f, -0.5f,0.0f,0.0f,0.0f,1.0f,1.0f };
-
-	Engine3D::Vertex *vertices2 = new Engine3D::Vertex[3];
-	vertices2[0] = { 0.5f, 0.5f,0.0f,1.0f,0.0f,0.0f,1.0f };
-	vertices2[1] = { 0.95f, -0.5f,0.0f,0.0f,1.0f,0.0f,1.0f };
-	vertices2[3] = { -0.95f, -0.5f,0.0f,0.0f,0.0f,1.0f,1.0f };*/
+	
 
 	Engine3D::Vertex *v1 = new  Engine3D::Vertex[3];
 	v1[0].Set(0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
@@ -31,8 +23,14 @@ int main()
 	p.topology = D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP;
 	engine.AddCustomPrimitive(p);
 
-	Engine3D::Grid grid(1.0f, 10);
+	Engine3D::Vertex v;
+	v.Set(0.2, 0, 0, 1.0);
+	Engine3D::Grid grid(1.0f, 10,v);
 	engine.AddPredefinedPrimitive(grid);
+	
+	v.Set(0.2, 0, 0, 0.0,1.0);
+	Engine3D::Plane plane(0.5, 0.8,v);
+	engine.AddPredefinedPrimitive(plane);
 	engine.StartWindow();
 
 	

@@ -156,6 +156,7 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 
 RET_VAL Engine3D::Render()
 {
+	//TODO: Update the camera only when needed
 	//Update camera
 	camera.Update();
 	cpuData.transformationsMatrix = camera.transformationsMatrix;
@@ -255,4 +256,17 @@ void Engine3D::Vertex::Set(float x , float y , float z , float r , float g , flo
 	this->g = g;
 	this->b = b;
 	this->a = a;
+}
+
+void Engine3D::Vertex::SetColor(float r, float g, float b, float a)
+{
+	this->r = r;
+	this->g = g;
+	this->b = b;
+	this->a = a;
+}
+
+void Engine3D::Vertex::SetColor(Vertex v)
+{
+	this->SetColor(v.r,v.g,v.b,v.a);
 }

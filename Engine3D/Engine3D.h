@@ -91,6 +91,8 @@ public:
 
 		Vertex();
 		void Set(float x =0.0f, float y =0.0f, float z = 0.0f, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f);
+		void SetColor(float r, float g, float b, float a);
+		void SetColor(Vertex v);
 	};
 
 	class CompiledShader
@@ -132,16 +134,29 @@ public:
 		float yaw;
 		float roll;
 		float scale;
+		Vertex center_color;
 	};
 
 	class Grid : public PredefinedPrimitive
 	{
 	public:
-		Grid(float size,int subdivisions);
+		Grid(float size, int subdivisions, Vertex centerAndColor = Vertex());
 		~Grid();
 	private:
 		float size;
 		float subdivisions;
+
+
+	};
+
+	class Plane : public PredefinedPrimitive
+	{
+	public:
+		Plane(float width, float length,Vertex centerAndColor = Vertex());
+		~Plane();
+	private:
+		float width;
+		float length;
 
 
 	};

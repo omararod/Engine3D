@@ -15,12 +15,13 @@ void Camera::Update()
 {
 	//Create a rotation matrix for the given pitch and yaw
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, 0);
-	//Get the direction of the look-at point by rotating the original point
-	DirectX::XMVECTOR lookAtDirection = DirectX::XMVector4Normalize( DirectX::XMVector4Transform(originalLookAtPoint, rotationMatrix));
-	//Get the length of the current look-at point vector
-	float magnitude = DirectX::XMVectorGetX(DirectX::XMVector4Length(lookAtPoint));
-	//Update the look-at point with the look-at direction vector scaled by the length of the previous look-at point vector
-	lookAtPoint = DirectX::XMVectorScale(lookAtDirection, magnitude );
+	//Get the vector that goes from the camera to the look at point
+	DirectX::XMVECTOR v = DirectX::XMVectorSubtract(originalLookAtPoint , cameraPosition);
+	//Transform the vector from the previous step
+	v = DirectX::XMVector4Transform(v, rotationMatrix);
+	//The new look-at-point is the addition of the transformed vector and the camera position
+	lookAtPoint = DirectX::XMVectorAdd(v,cameraPosition);
+	
 	//The forward vector is a unit vector going from the camera to the look-at point
 	forward = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(lookAtPoint,cameraPosition));
 	//we rotate the original up vector
