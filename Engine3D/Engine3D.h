@@ -187,6 +187,7 @@ private:
 	ID3D11PixelShader *pixelShader;
 	ID3D11Buffer *vertexBuffer;
 	ID3D11Buffer *constantBuffer1;
+	ID3D11DepthStencilView *zBuffer;
 	std::vector<CustomPrimitive> customPrimitives;
 	std::vector<PredefinedPrimitive> predefinedPrimitives;
 	

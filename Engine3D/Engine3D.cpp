@@ -23,6 +23,7 @@ Engine3D::~Engine3D()
 	RELEASE_INTERFACE(pixelShader);
 	RELEASE_INTERFACE(vertexBuffer);
 	RELEASE_INTERFACE(constantBuffer1);
+	RELEASE_INTERFACE(zBuffer);
 }
 
 RET_VAL Engine3D::IntializeFull(int width, int height, LPCSTR title)
@@ -81,13 +82,34 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 	ID3D11Texture2D *pointerToBackBuffer;
 	swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pointerToBackBuffer);
 
-	
 	device->CreateRenderTargetView(pointerToBackBuffer, NULL, &backBuffer);
 	pointerToBackBuffer->Release();
 
-	
-	deviceContext->OMSetRenderTargets(1, &backBuffer, NULL);
+	//Create a depth buffer
+	D3D11_TEXTURE2D_DESC depthBufferDescriptor{ 0 };
+	depthBufferDescriptor.Width = windowWidth;
+	depthBufferDescriptor.Height = windowHeight;
+	depthBufferDescriptor.ArraySize = 1;
+	depthBufferDescriptor.MipLevels = 1;
+	depthBufferDescriptor.SampleDesc.Count = 4;
+	depthBufferDescriptor.Format = DXGI_FORMAT_D32_FLOAT;
+	depthBufferDescriptor.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
+	ID3D11Texture2D *depthBuffer;
+	device->CreateTexture2D(&depthBufferDescriptor, NULL, &depthBuffer);
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDescriptor;
+	ZeroMemory(&stencilDescriptor, sizeof(stencilDescriptor));
+
+	stencilDescriptor.Format = DXGI_FORMAT_D32_FLOAT;
+	stencilDescriptor.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	device->CreateDepthStencilView(depthBuffer, &stencilDescriptor, &zBuffer);
+	depthBuffer->Release();
+
+	//Set render target and z-buffer
+	deviceContext->OMSetRenderTargets(1, &backBuffer, zBuffer);
+
+	
 
 	// Set the viewport
 	D3D11_VIEWPORT viewport{ 0 };
@@ -95,6 +117,8 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 	viewport.TopLeftY = 0;
 	viewport.Width = (float)windowWidth;
 	viewport.Height = (float)windowHeight;
+	viewport.MinDepth = 0;
+	viewport.MaxDepth = 1.0;
 
 	deviceContext->RSSetViewports(1, &viewport);
 
@@ -109,12 +133,6 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	device->CreateBuffer(&bd, NULL, &vertexBuffer);
-
-								
-	/*D3D11_MAPPED_SUBRESOURCE mappedSubresource{ 0 };
-	deviceContext->Map(vertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mappedSubresource);   
-	memcpy(mappedSubresource.pData, vertices, sizeof(vertices));
-	deviceContext->Unmap(vertexBuffer, NULL);*/
 
 	//Constant Buffers
 	D3D11_BUFFER_DESC bufferDescriptor{ 0 };
@@ -164,6 +182,9 @@ RET_VAL Engine3D::Render()
 	
 	float color[4] = { 1, 1, 1, 0 };
 	deviceContext->ClearRenderTargetView(backBuffer,color);
+
+	//clear the depth buffer
+	deviceContext->ClearDepthStencilView(zBuffer, D3D11_CLEAR_DEPTH, 1.0, 0);
 
 	// select which vertex buffer to display
 	UINT stride = sizeof(Vertex);
