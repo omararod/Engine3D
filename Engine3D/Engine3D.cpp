@@ -165,6 +165,16 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 	device->CreateInputLayout(inputLayoutDescriptor, 2, vertexShaderBinary.data, vertexShaderBinary.size, &inputLayout);
 	deviceContext->IASetInputLayout(inputLayout);
 
+	//setup rasterizer
+	D3D11_RASTERIZER_DESC rasterizerDescriptor;
+	ZeroMemory(&rasterizerDescriptor, sizeof(D3D11_RASTERIZER_DESC));
+	rasterizerDescriptor.CullMode = D3D11_CULL_NONE; //draw both sides of triangles
+	rasterizerDescriptor.FillMode = D3D11_FILL_SOLID;
+	device->CreateRasterizerState(&rasterizerDescriptor, &rasterizer);
+	deviceContext->RSSetState(rasterizer);
+
+
+
 	if (windowed)
 		window->SetEngine3DPointer(this);
 
