@@ -15,24 +15,19 @@ void Camera::Update()
 {
 	//Create a rotation matrix for the given pitch and yaw
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, 0);
-	//Get the vector that goes from the camera to the look at point
-	DirectX::XMVECTOR v = DirectX::XMVectorSubtract(originalLookAtPoint , cameraPosition);
-	//Transform the vector from the previous step
-	v = DirectX::XMVector4Transform(v, rotationMatrix);
-	//The new look-at-point is the addition of the transformed vector and the camera position
-	lookAtPoint = DirectX::XMVectorAdd(v,cameraPosition);
-	
-	//The forward vector is a unit vector going from the camera to the look-at point
-	forward = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(lookAtPoint,cameraPosition));
+    forward = DirectX::XMVector4Transform(originalLookAtPoint, rotationMatrix);
+    lookAtPoint = DirectX::XMVectorAdd(forward, cameraPosition);
+
 	//we rotate the original up vector
 	up = DirectX::XMVector4Normalize(DirectX::XMVector4Transform(DirectX::XMVectorSet(0, 1, 0, 0), rotationMatrix));
-	//is handy to have a right vector, the cross product of the up and forward vectors
-	right = DirectX::XMVector3Cross(up, forward);
+    //forward = DirectX::XMVector4Normalize(DirectX::XMVectorSubtract(lookAtPoint, cameraPosition));
+    right = DirectX::XMVector3Cross(up, forward);
 
 	DirectX::XMMATRIX perspectiveMatrix = DirectX::XMMatrixPerspectiveFovLH(fieldOfView, aspectRatio, 0.00001, 1000.0); //TODO: remove his magic numbers
-	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, lookAtPoint, up);
+	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(cameraPosition, lookAtPoint, DirectX::XMVectorSet(0, 1, 0, 0));
 
 	transformationsMatrix =  viewMatrix * perspectiveMatrix;
+    
 }
 
 void Camera::Move(MOVE_DIRECTION direction)
