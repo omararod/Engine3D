@@ -88,6 +88,7 @@ public:
 		float g;
 		float b;
 		float a;
+        
 
 		Vertex();
 		void Set(float x =0.0f, float y =0.0f, float z = 0.0f, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f);
@@ -174,8 +175,10 @@ public:
 	RET_VAL Render();
 	RET_VAL AddCustomPrimitive(CustomPrimitive primitive);
 	RET_VAL AddPredefinedPrimitive(PredefinedPrimitive primitive);
+    void    SetBackgroundColor(float r, float g, float b, float a);
 
 private:
+    float backgroundColor[4];
 	bool windowed;
 	RenderingWindow *window;
 	IDXGISwapChain *swapchain;

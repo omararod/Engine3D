@@ -2,7 +2,7 @@
 
 Engine3D::Vertex::Vertex():x(0),y(0),z(0),r(0),g(0),b(0),a(0)
 {}
-Engine3D::Engine3D() : windowed(false),window(nullptr)
+Engine3D::Engine3D() : windowed(false), window(nullptr), backgroundColor{1,1,1,0}
 {
 	
 }
@@ -184,14 +184,13 @@ RET_VAL Engine3D::InitializeGraphics(HWND windowHandle)
 
 RET_VAL Engine3D::Render()
 {
-	//TODO: Update the camera only when needed
+
 	//Update camera
 	camera.Update();
 	cpuData.transformationsMatrix = camera.transformationsMatrix;
 	deviceContext->UpdateSubresource(constantBuffer1, 0, 0,&cpuData , 0, 0);
 	
-	float color[4] = { 1, 1, 1, 0 };
-	deviceContext->ClearRenderTargetView(backBuffer,color);
+	deviceContext->ClearRenderTargetView(backBuffer, backgroundColor);
 
 	//clear the depth buffer
 	deviceContext->ClearDepthStencilView(zBuffer, D3D11_CLEAR_DEPTH, 1.0, 0);
@@ -252,6 +251,14 @@ RET_VAL Engine3D::LoadFile(const char *fileName,CompiledShader *compiledShader)
 	file.read((char *)compiledShader->data, compiledShader->size);
 	file.close();
 	return RET_OK;
+}
+
+void Engine3D::SetBackgroundColor(float r, float g, float b, float a)
+{
+    backgroundColor[0] = r;
+    backgroundColor[1] = g;
+    backgroundColor[2] = b;
+    backgroundColor[3] = a;
 }
 
 Engine3D::CompiledShader::CompiledShader() : data(NULL), size(0)

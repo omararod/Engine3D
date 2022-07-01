@@ -31,6 +31,8 @@ int main()
 	v.Set(0.2, 0, 0, 0.0,1.0);
 	Engine3D::Plane plane(0.5, 0.8,v);
 	engine.AddPredefinedPrimitive(plane);
+
+    engine.SetBackgroundColor(0.8, 0.8, 0.8, 0);
 	engine.StartWindow();
 
 	
